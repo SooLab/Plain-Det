@@ -11,7 +11,8 @@ lvis_vis/
 o365_vis/
 oid_vis/
 vis_result/
-label_embedding/*
+label_embedding/**
+!label_embedding/
 
 
 # auto generated file at installation
