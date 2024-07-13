@@ -1,4 +1,4 @@
-# \(Plain\)-\(D^Net\)
+# Plain-Det
 
 **The official PyTorch implementation of the "Plain-Det: A Plain Multi-Dataset Object Detector".**
 
@@ -7,8 +7,6 @@
 By [Cheng Shi*](https://chengshiest.github.io/), Yuchen Zhu* and [Sibei Yang†](https://faculty.sist.shanghaitech.edu.cn/yangsibei/)
 
 *Equal contribution; †Corresponding Author
-
----
 
 ## Installation
 
@@ -33,7 +31,7 @@ python -m pip install -e detectron2
 python setup.py build develop
 ```
 
-## Prepare datasets for \(Plain\)-\(D^Net\)
+## Prepare datasets for Plain-Det
 
 You can follow [detectron2](https://detectron2.readthedocs.io/en/latest/tutorials/builtin_datasets.html) to prepare the dataset.
 
