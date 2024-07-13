@@ -13,6 +13,7 @@ oid_vis/
 vis_result/
 label_embedding/**
 !label_embedding/
+!label_embedding/README.md
 
 
 # auto generated file at installation
