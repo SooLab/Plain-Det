@@ -12,7 +12,7 @@ from detectron2.data import detection_utils as utils
 from detectron2.utils.logger import setup_logger
 from detectron2.utils.visualizer import Visualizer
 import sys
-sys.path.append('/root/code/General_Det')
+# sys.path.append('/root/code/General_Det')
 
 
 def setup(args):

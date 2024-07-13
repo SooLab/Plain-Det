@@ -14,13 +14,13 @@ from detectron2.structures import Boxes, BoxMode, Instances
 from detectron2.utils.file_io import PathManager
 from detectron2.utils.logger import setup_logger
 from detectron2.utils.visualizer import Visualizer
-from General_Det.data.datasets.object365 import register_object365_instances
+from Plain_Det.data.datasets.object365 import register_object365_instances
 from detectron2.data.datasets import register_coco_instances, register_lvis_instances
-from General_Det.data.datasets.register_oid import register_oid_instances
-from General_Det.data.datasets.register_oid_classic import register_oid_instances_classic
-from General_Det.data.datasets import categories
-from General_Det.data.datasets import oidv4
-from General_Det.evaluation import OIDEvaluator
+from Plain_Det.data.datasets.register_oid import register_oid_instances
+from Plain_Det.data.datasets.register_oid_classic import register_oid_instances_classic
+from Plain_Det.data.datasets import categories
+from Plain_Det.data.datasets import oidv4
+from Plain_Det.evaluation import OIDEvaluator
 DATASET_PATH = '/public/home/zhuyuchen530/projects/detrex/datasets'
 RFS_PATH = os.path.join(DATASET_PATH,"rfs","oid_rfs.json")
 

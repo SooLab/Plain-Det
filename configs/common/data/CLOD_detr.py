@@ -12,19 +12,19 @@ from detectron2.data import (
 from detectron2.evaluation import COCOEvaluator
 from detectron2.evaluation import LVISEvaluator
 
-from General_Det.data import DetrDatasetMapper
-from General_Det.data import build_custom_train_loader
-from General_Det.data import MultiDatasetSampler
-from General_Det.data import get_detection_dataset_dicts_with_source
-from General_Det.data.datasets.register_oid import register_oid_instances
-from General_Det.data.datasets.register_oid_classic import register_oid_instances_classic
-from General_Det.data.datasets.object365 import register_object365_instances
-from General_Det.data.datasets.object365_classic import register_object365_instances_classic
-from General_Det.data.datasets import register_lvis_instances, register_lvis_instances_classic
+from Plain_Det.data import DetrDatasetMapper
+from Plain_Det.data import build_custom_train_loader
+from Plain_Det.data import MultiDatasetSampler
+from Plain_Det.data import get_detection_dataset_dicts_with_source
+from Plain_Det.data.datasets.register_oid import register_oid_instances
+from Plain_Det.data.datasets.register_oid_classic import register_oid_instances_classic
+from Plain_Det.data.datasets.object365 import register_object365_instances
+from Plain_Det.data.datasets.object365_classic import register_object365_instances_classic
+from Plain_Det.data.datasets import register_lvis_instances, register_lvis_instances_classic
 from detectron2.data.datasets import register_coco_instances
-from General_Det.data.datasets import oidv4
-from General_Det.data.datasets import oidv6
-from General_Det.evaluation import OIDEvaluator
+from Plain_Det.data.datasets import oidv4
+from Plain_Det.data.datasets import oidv6
+from Plain_Det.evaluation import OIDEvaluator
 DATASET_PATH = '/public/home/zhuyuchen530/projects/detrex/datasets'
 RFS_PATH_d = os.path.join(DATASET_PATH,"rfs","oid_rfs.json")
 CLSA_PATH_d = os.path.join(DATASET_PATH,"rfs","oidv4_clsaware.json")

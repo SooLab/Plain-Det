@@ -19,33 +19,32 @@ import time
 import torch
 from torch.nn.parallel import DataParallel, DistributedDataParallel
 
+from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import LazyConfig, instantiate
 from detectron2.engine import (
     SimpleTrainer,
     default_argument_parser,
     default_setup,
+    default_writers,
     hooks,
     launch,
 )
 from detectron2.engine.defaults import create_ddp_model
-from detectron2.evaluation import print_csv_format
+from detectron2.evaluation import inference_on_dataset, print_csv_format
 from detectron2.utils import comm
-from detectron2.utils.file_io import PathManager
-from detectron2.utils.events import (
-    CommonMetricPrinter, 
-    JSONWriter, 
-    TensorboardXWriter
-)
-from detectron2.checkpoint import DetectionCheckpointer
-# from detrex.checkpoint import DetectionCheckpointer
 
-from detrex.utils import WandbWriter
-from detrex.modeling import ema
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
-from Plain_Det.evaluation import inference_on_dataset
+logger = logging.getLogger("detrex")
 
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-# sys.path.append('/root/code/General_Det')
+
+def match_name_keywords(n, name_keywords):
+    out = False
+    for b in name_keywords:
+        if b in n:
+            out = True
+            break
+    return out
 
 
 class Trainer(SimpleTrainer):
@@ -74,8 +73,8 @@ class Trainer(SimpleTrainer):
                 from torch.cuda.amp import GradScaler
 
                 grad_scaler = GradScaler()
-        self.grad_scaler = grad_scaler
-        
+            self.grad_scaler = grad_scaler
+
         # set True to use amp training
         self.amp = amp
 
@@ -95,58 +94,13 @@ class Trainer(SimpleTrainer):
         If you want to do something with the data, you can wrap the dataloader.
         """
         data = next(self._data_loader_iter)
-        dataset_name = "coco"
-        flag = 0
-        for d in data:
-            if 'dataset_source' in d:
-                if 0 == int(d['dataset_source']):
-                    # assert flag != 2, "one batch multidatasets"
-                    if flag != 1 and flag != 0:
-                        dataset_name = "lvis_v1"
-                        print("coco break")
-                        break
-                        # continue
-                    flag = 1
-                    dataset_name = "coco"
-                    # print(dataset_name)
-                elif 1 == int(d['dataset_source']):
-                    # assert flag != 1, "one batch multidatasets"
-                    if flag != 2 and flag != 0:
-                        dataset_name = "lvis_v1"
-                        print("lvis break")
-                        break
-                        # continue
-                    flag = 2
-                    dataset_name = "lvis_v1"
-                    # print(dataset_name)
-                elif 2 == int(d['dataset_source']):
-                    if flag != 3 and flag != 0:
-                        dataset_name = "lvis_v1"
-                        print("o365 break")
-                        break
-                        # continue
-                    flag = 3
-                    dataset_name = "o365"
-                    # print(dataset_name)
-                elif 3 == int(d['dataset_source']):
-                    if flag != 4 and flag != 0:
-                        dataset_name = "lvis_v1"
-                        print("oid break")
-                        break
-                        # continue
-                    flag = 4
-                    dataset_name = "oid"
-                # print(dataset_name)
-        # print('******************************')
         data_time = time.perf_counter() - start
 
         """
         If you want to do something with the losses, you can wrap the model.
         """
+        loss_dict = self.model(data)
         with autocast(enabled=self.amp):
-            # loss_dict = self.model.forward(data,**{'dataset_name':dataset_name})
-            # loss_dict = self.model(data, "o365")
-            loss_dict = self.model(data,dataset_name)
             if isinstance(loss_dict, torch.Tensor):
                 losses = loss_dict
                 loss_dict = {"total_loss": loss_dict}
@@ -182,50 +136,13 @@ class Trainer(SimpleTrainer):
                 **self.clip_grad_params,
             )
 
-    def state_dict(self):
-        ret = super().state_dict()
-        if self.grad_scaler and self.amp:
-            ret["grad_scaler"] = self.grad_scaler.state_dict()
-        return ret
 
-    def load_state_dict(self, state_dict):
-        super().load_state_dict(state_dict)
-        if self.grad_scaler and self.amp:
-            self.grad_scaler.load_state_dict(state_dict["grad_scaler"])
-
-
-def do_test(cfg, model, eval_only=False):
-    logger = logging.getLogger("detectron2")
-
-    if eval_only:
-        logger.info("Run evaluation under eval-only mode")
-        if cfg.train.model_ema.enabled and cfg.train.model_ema.use_ema_weights_for_eval_only:
-            logger.info("Run evaluation with EMA.")
-        else:
-            logger.info("Run evaluation without EMA.")
-        if "evaluator" in cfg.dataloader:
-            ret = inference_on_dataset(
-                model, instantiate(cfg.dataloader.test), instantiate(cfg.dataloader.evaluator)
-            )
-            print_csv_format(ret)
-        return ret
-    
-    logger.info("Run evaluation without EMA.")
+def do_test(cfg, model):
     if "evaluator" in cfg.dataloader:
         ret = inference_on_dataset(
             model, instantiate(cfg.dataloader.test), instantiate(cfg.dataloader.evaluator)
         )
         print_csv_format(ret)
-
-        if cfg.train.model_ema.enabled:
-            logger.info("Run evaluation with EMA.")
-            with ema.apply_model_ema_and_restore(model):
-                if "evaluator" in cfg.dataloader:
-                    ema_ret = inference_on_dataset(
-                        model, instantiate(cfg.dataloader.test), instantiate(cfg.dataloader.evaluator)
-                    )
-                    print_csv_format(ema_ret)
-                    ret.update(ema_ret)
         return ret
 
 
@@ -252,26 +169,42 @@ def do_train(args, cfg):
     logger = logging.getLogger("detectron2")
     logger.info("Model:\n{}".format(model))
     model.to(cfg.train.device)
-    
-    # for n,p in model.named_parameters():
-    #     if 'backbone' in n:
-    #         p.requres_grad = False
 
-    # instantiate optimizer
-    cfg.optimizer.params.model = model
-    optim = instantiate(cfg.optimizer)
+    # this is an hack of train_net
+    param_dicts = [
+        {
+            "params": [
+                p
+                for n, p in model.named_parameters()
+                if not match_name_keywords(n, ["backbone"])
+                and not match_name_keywords(n, ["reference_points", "sampling_offsets"])
+                and p.requires_grad
+            ],
+            "lr": 2e-4,
+        },
+        {
+            "params": [
+                p
+                for n, p in model.named_parameters()
+                if match_name_keywords(n, ["backbone"]) and p.requires_grad
+            ],
+            "lr": 2e-5,
+        },
+        {
+            "params": [
+                p
+                for n, p in model.named_parameters()
+                if match_name_keywords(n, ["reference_points", "sampling_offsets"])
+                and p.requires_grad
+            ],
+            "lr": 2e-5,
+        },
+    ]
+    optim = torch.optim.AdamW(param_dicts, 2e-4, weight_decay=1e-4)
 
-    # build training loader
     train_loader = instantiate(cfg.dataloader.train)
 
-    # for name, param in model.named_parameters():
-    #     param.requires_grad_(False)
-    
-    # create ddp model
     model = create_ddp_model(model, **cfg.train.ddp)
-
-    # build model ema
-    ema.may_build_model_ema(cfg, model)
 
     trainer = Trainer(
         model=model,
@@ -280,39 +213,23 @@ def do_train(args, cfg):
         amp=cfg.train.amp.enabled,
         clip_grad_params=cfg.train.clip_grad.params if cfg.train.clip_grad.enabled else None,
     )
-    
+
     checkpointer = DetectionCheckpointer(
         model,
         cfg.train.output_dir,
         trainer=trainer,
-        # save model ema
-        **ema.may_get_ema_checkpointer(cfg, model)
     )
-
-    if comm.is_main_process():
-        # writers = default_writers(cfg.train.output_dir, cfg.train.max_iter)
-        output_dir = cfg.train.output_dir
-        PathManager.mkdirs(output_dir)
-        writers = [
-            CommonMetricPrinter(cfg.train.max_iter),
-            JSONWriter(os.path.join(output_dir, "metrics.json")),
-            TensorboardXWriter(output_dir),
-        ]
-        if cfg.train.wandb.enabled:
-            PathManager.mkdirs(cfg.train.wandb.params.dir)
-            writers.append(WandbWriter(cfg))
 
     trainer.register_hooks(
         [
             hooks.IterationTimer(),
-            ema.EMAHook(cfg, model) if cfg.train.model_ema.enabled else None,
             hooks.LRScheduler(scheduler=instantiate(cfg.lr_multiplier)),
             hooks.PeriodicCheckpointer(checkpointer, **cfg.train.checkpointer)
             if comm.is_main_process()
             else None,
             hooks.EvalHook(cfg.train.eval_period, lambda: do_test(cfg, model)),
             hooks.PeriodicWriter(
-                writers,
+                default_writers(cfg.train.output_dir, cfg.train.max_iter),
                 period=cfg.train.log_period,
             )
             if comm.is_main_process()
@@ -335,36 +252,18 @@ def main(args):
     cfg = LazyConfig.apply_overrides(cfg, args.opts)
     default_setup(cfg, args)
 
-    # add loss file for online sampling.
-    # if cfg.model.online_sample == True:
-        
-    
-    # Enable fast debugging by running several iterations to check for any bugs.
-    if cfg.train.fast_dev_run.enabled:
-        cfg.train.max_iter = 20
-        cfg.train.eval_period = 10
-        cfg.train.log_period = 1
-
     if args.eval_only:
         model = instantiate(cfg.model)
         model.to(cfg.train.device)
         model = create_ddp_model(model)
-        
-        # using ema for evaluation
-        ema.may_build_model_ema(cfg, model)
-        DetectionCheckpointer(model, **ema.may_get_ema_checkpointer(cfg, model)).load(cfg.train.init_checkpoint)
-        # Apply ema state for evaluation
-        if cfg.train.model_ema.enabled and cfg.train.model_ema.use_ema_weights_for_eval_only:
-            ema.apply_model_ema(model)
-        print(do_test(cfg, model, eval_only=True))
+        DetectionCheckpointer(model).load(cfg.train.init_checkpoint)
+        print(do_test(cfg, model))
     else:
         do_train(args, cfg)
 
 
 if __name__ == "__main__":
     args = default_argument_parser().parse_args()
-    # print(args.dist_url)
-    # args.dist_url = args.dist_url.replace("51019","51033")
     launch(
         main,
         args.num_gpus,

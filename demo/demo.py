@@ -17,19 +17,19 @@ from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import LazyConfig, instantiate
 from detectron2.data.detection_utils import read_image
 from detectron2.utils.logger import setup_logger
-from General_Det.data import DetrDatasetMapper
-from General_Det.data import build_custom_train_loader
-from General_Det.data import MultiDatasetSampler
-from General_Det.data import get_detection_dataset_dicts_with_source
-from General_Det.data.datasets.register_oid import register_oid_instances
-from General_Det.data.datasets.register_oid_classic import register_oid_instances_classic
-from General_Det.data.datasets.object365 import register_object365_instances
-from General_Det.data.datasets.object365_classic import register_object365_instances_classic
-from General_Det.data.datasets import register_lvis_instances, register_lvis_instances_classic
+from Plain_Det.data import DetrDatasetMapper
+from Plain_Det.data import build_custom_train_loader
+from Plain_Det.data import MultiDatasetSampler
+from Plain_Det.data import get_detection_dataset_dicts_with_source
+from Plain_Det.data.datasets.register_oid import register_oid_instances
+from Plain_Det.data.datasets.register_oid_classic import register_oid_instances_classic
+from Plain_Det.data.datasets.object365 import register_object365_instances
+from Plain_Det.data.datasets.object365_classic import register_object365_instances_classic
+from Plain_Det.data.datasets import register_lvis_instances, register_lvis_instances_classic
 from detectron2.data.datasets import register_coco_instances
-from General_Det.data.datasets import oidv4
-from General_Det.data.datasets import oidv6
-from General_Det.evaluation import OIDEvaluator
+from Plain_Det.data.datasets import oidv4
+from Plain_Det.data.datasets import oidv6
+from Plain_Det.evaluation import OIDEvaluator
 import json
 o365 = json.load(open('datasets/metadata/object365_train_cat_info.json','r'))
 coco = json.load(open('datasets/coco/annotations/instances_train2017_cat_info.json','r'))
