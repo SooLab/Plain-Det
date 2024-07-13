@@ -1,39 +1,71 @@
-# Plain-Det
+# \(Plain\)-\(D^Net\)
 
-By [Cheng Shi](https://chengshiest.github.io/), Yuchen Zhu and
-[Sibei Yang](https://faculty.sist.shanghaitech.edu.cn/yangsibei/)
+**The official PyTorch implementation of the "Plain-Det: A Plain Multi-Dataset Object Detector".**
 
-The official PyTorch implementation of the "Plain-Det: A Plain Multi-Dataset Object Detector".
+![Plain_det](configs/assets/plain_det.png)
 
-# Main results
-| COCO | LVIS | O365 | OID | Paper Position | CFG | CKPT |
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | 
-| ✗ | ✗ | ✗ | ✗ | Tab1 line1 | [cfg](./configs/swinv2_small_sup_pt_ape.sh) | [ckpt](https://msravcghub.blob.core.windows.net/plaindetr-release/plaindetr_models/plaindetr_swinv2_small_sup_pt_ape.pth?sv=2020-04-08&st=2023-11-11T09%3A53%3A39Z&se=2049-12-31T09%3A53%3A00Z&sr=b&sp=r&sig=1ntSPDFHXBDVfYts8aUX8xTxA2kRpZyEQdwZL0tRNSk%3D)
-| ✓ | ✗ | ✗ | 46.1 | Tab2 Exp2 | [cfg](./configs/swinv2_small_sup_pt_boxrpe.sh) | [ckpt](https://msravcghub.blob.core.windows.net/plaindetr-release/plaindetr_models/plaindetr_swinv2_small_sup_pt_boxrpe.pth?sv=2020-04-08&st=2023-11-11T09%3A54%3A10Z&se=2023-11-12T09%3A54%3A10Z&sr=b&sp=r&sig=yg4gw7vWX8zlOurS3x2J9%2BPwfsSaHEYYOHE4DJTWw%2BQ%3D) 
-| ✓ | ✓ | ✗ | 48.7 | Tab2 Exp5 | [cfg](./configs/swinv2_small_mim_pt_boxrpe.sh) | [ckpt](https://msravcghub.blob.core.windows.net/plaindetr-release/plaindetr_models/plaindetr_swinv2_small_mim_pt_boxrpe.pth?sv=2020-04-08&st=2023-11-11T09%3A52%3A38Z&se=2049-12-31T09%3A52%3A00Z&sr=b&sp=r&sig=eX%2FNgca78ccyBhlujtCSh1BDHiPPOjjceyrMMLxKgr8%3D)
-| ✓ | ✓ | ✓ | 50.9 | Tab2 Exp6 | [cfg](./configs/swinv2_small_mim_pt_boxrpe_reparam.sh) | [ckpt](https://msravcghub.blob.core.windows.net/plaindetr-release/plaindetr_models/plaindetr_swinv2_small_mim_pt_boxrpe_reparam.pth?sv=2020-04-08&st=2023-11-14T07%3A42%3A25Z&se=2049-12-31T07%3A42%3A00Z&sr=b&sp=r&sig=5r09k4tFNIO%2FURYIQ2RbjJOU7v4dWqFW1D3F%2Bdg%2FYq0%3D)
-# Installation
+By [Cheng Shi*](https://chengshiest.github.io/), Yuchen Zhu* and [Sibei Yang†](https://faculty.sist.shanghaitech.edu.cn/yangsibei/)
+
+*Equal contribution; †Corresponding Author
+
+---
+
+## Installation
+
 ### Conda
 
-```
+```bash
 # create conda environment
-conda create -n plain_det python=3.8 -y
-conda activate plain_det
+conda create -n plaindet python=3.10.11 -y
+conda activate plaindet
 
 # install pytorch (other versions may also work)
-conda install pytorch==1.13.1 torchvision==0.14.1 torchaudio==0.13.1 pytorch-cuda=11.7 -c pytorch -c nvidia
+pip install torch==2.0.0 torchvision==0.15.1 torchaudio==2.0.1
 
 # other requirements
 git clone https://github.com/ChengShiest/Plain-Det.git
 cd Plain-Det
-pip install -r requirements.txt
+
+# setup detectron2
+python -m pip install -e detectron2
+
+# setup detrex
+python setup.py build develop
 ```
 
-# Usage
+## Prepare datasets for \(Plain\)-\(D^Net\)
 
-# Citing Plain-Det
+You can follow [detectron2](https://detectron2.readthedocs.io/en/latest/tutorials/builtin_datasets.html) to prepare the dataset.
+
+## Usage
+
+```bash
+
+# run evaluation
+bash scripts/eval.sh
+```
+
+## Main results
+
+### Table 1
+  
+| METHOD| COCO | LVIS | O365 | OID | mAP | Paper Position | CFG | CKPT |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | 
+|L| 37.2 | 33.3 | 13.4 | 35.3 | 29.8 | Tab1 line3 | cfg |ckpt 
+|CL| 46.0 | 33.2 | 14.2 | 35.7 | 32.3 | Tab1 line4 | cfg |ckpt 
+|CLO| 51.8 | 39.9 | 33.2 | 41.7 | 41.7 | Tab1 line5 | cfg | ckpt
+|CLOD| 51.9 | 40.9 | 33.3 | 63.4 | 47.4 | Tab1 line6 | [cfg](./projects/deformable_detr/configs/deformable_detr_r50_two_stage_90k_clod.py) | [ckpt](https://drive.google.com/file/d/1PL2WM78Ikl_4yf4mh4N_grUhWb2rrZk7/view?usp=drive_link)
+
+**Note:**
+
+- We first release the results of CLOD(COCO, LVIS, Objects365, OIDv4). We are checking other training weights and will update the results soon.
+- You can get the label embedding we use from [here](https://drive.google.com/drive/folders/1G102noS3TjIFkXnShKhaaQRSuPXORwjQ?usp=drive_link)
+- We will release the trainable code soon.
+
+## Citing Plain-Det
 
 If you find Plain-Det useful in your research, please consider citing:
+
 ```
 inproceedings{
   shi2024plain,
