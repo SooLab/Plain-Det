@@ -24,6 +24,9 @@ pip install torch==2.0.0 torchvision==0.15.1 torchaudio==2.0.1
 git clone https://github.com/ChengShiest/Plain-Det.git
 cd Plain-Det
 
+# install packages
+pip install -r requirements.txt
+
 # setup detectron2
 python -m pip install -e detectron2
 
