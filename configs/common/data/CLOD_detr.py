@@ -139,9 +139,9 @@ dataloader.train = L(build_custom_train_loader)(
 )
 
 dataloader.test = L(build_detection_test_loader)(
-    # dataset=L(get_detection_dataset_dicts_with_source)(dataset_names="coco_2017_val_0", filter_empty=False),
+    dataset=L(get_detection_dataset_dicts_with_source)(dataset_names="coco_2017_val_0", filter_empty=False),
     # dataset=L(get_detection_dataset_dicts_with_source)(dataset_names="lvis_v1_val_0", filter_empty=False),
-    dataset=L(get_detection_dataset_dicts_with_source)(dataset_names="oidv4_val_expanded", filter_empty=False),
+    # dataset=L(get_detection_dataset_dicts_with_source)(dataset_names="oidv4_val_expanded", filter_empty=False),
     # dataset=L(get_detection_dataset_dicts_with_source)(dataset_names="oidv6_val", filter_empty=False),
     # dataset=L(get_detection_dataset_dicts_with_source)(dataset_names="object365_val", filter_empty=False),
     mapper=L(DetrDatasetMapper)(
@@ -159,8 +159,8 @@ dataloader.test = L(build_detection_test_loader)(
     num_workers=1,
 )
 
-dataloader.evaluator = L(OIDEvaluator)(
+# dataloader.evaluator = L(OIDEvaluator)(
 # dataloader.evaluator = L(LVISEvaluator)(
-# dataloader.evaluator = L(COCOEvaluator)(
+dataloader.evaluator = L(COCOEvaluator)(
     dataset_name="${..test.dataset.dataset_names}",
 )
