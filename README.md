@@ -11,7 +11,7 @@ By [Cheng Shi*](https://chengshiest.github.io/), Yuchen Zhu* and [Sibei Yang†]
 ## Highlights
 
 - Plain-Det is accepted by ECCV2024!
-- We will release the trainable code soon.
+- We will release the training code soon.
 
 ## Main results
 
