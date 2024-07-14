@@ -22,7 +22,7 @@ By [Cheng Shi*](https://chengshiest.github.io/), Yuchen Zhu* and [Sibei Yang†]
 |L| 37.2 | 33.3 | 13.4 | 35.3 | 29.8 | Tab1 line3 | cfg |ckpt 
 |CL| 46.0 | 33.2 | 14.2 | 35.7 | 32.3 | Tab1 line4 | cfg |ckpt 
 |CLO| 51.8 | 39.9 | 33.2 | 41.7 | 41.7 | Tab1 line5 | cfg | ckpt
-|CLOD| 51.9 | 40.9 | 33.3 | 63.4 | 47.4 | Tab1 line6 | [cfg](./projects/deformable_detr/configs/deformable_detr_r50_two_stage_90k_clod.py) | [ckpt](https://drive.google.com/file/d/1PL2WM78Ikl_4yf4mh4N_grUhWb2rrZk7/view?usp=drive_link)
+|CLOD| 51.9 | 40.9 | 33.3 | 63.4 | 47.4 | Tab1 line6 | [cfg](./projects/deformable_detr/configs/deformable_detr_r50_two_stage_800k_clod.py) | [ckpt](https://drive.google.com/file/d/1PL2WM78Ikl_4yf4mh4N_grUhWb2rrZk7/view?usp=drive_link)
 
 **Note:**
 
