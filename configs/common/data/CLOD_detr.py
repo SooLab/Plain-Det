@@ -25,15 +25,20 @@ from detectron2.data.datasets import register_coco_instances
 from Plain_Det.data.datasets import oidv4
 from Plain_Det.data.datasets import oidv6
 from Plain_Det.evaluation import OIDEvaluator
+
 DATASET_PATH = './datasets'
 RFS_PATH_d = os.path.join(DATASET_PATH,"rfs","oid_rfs.json")
 CLSA_PATH_d = os.path.join(DATASET_PATH,"rfs","oidv4_clsaware.json")
 RFS_PATH_o = os.path.join(DATASET_PATH,"rfs","object365_rfs.json")
 RFS_PATH_l = os.path.join(DATASET_PATH,"rfs","lvis_rfs.json")
+
+# You can omit this and use the d2 bultin datasets. 
 register_coco_instances("coco_2017_train_0", {}, "datasets/coco/annotations/instances_train2017.json", "datasets/coco/train2017")
 register_coco_instances("coco_2017_val_0", {}, "datasets/coco/annotations/instances_val2017.json", "datasets/coco/val2017")
 register_lvis_instances("lvis_v1_train_0", {}, "datasets/lvis/lvis_v1_train_noAnn.json", "datasets/coco/")
 register_lvis_instances_classic("lvis_v1_val_0", {}, "datasets/lvis/lvis_v1_val.json", "datasets/coco/")
+
+# Register objects365
 register_object365_instances("object365_train", {}, "datasets/object365v2/annotations/modified_zhiyuan_objv2_train_noAnn.json", "datasets/object365v2/images/train")
 register_object365_instances_classic("object365_val", {}, "datasets/object365v2/annotations/zhiyuan_objv2_val.json", "datasets/object365v2/images/val")
 
@@ -45,16 +50,14 @@ def _get_builtin_metadata(cats):
         "thing_dataset_id_to_contiguous_id": thing_dataset_id_to_contiguous_id,
         "thing_classes": thing_classes}
 
+# Register OID
 _CLASSIC_REGISTER_OID = {
     # "oid_val_expanded": ("/storage/data/zhuyuchen530/oid/images/validation/", "/storage/data/zhuyuchen530/oid/annotations/openimages_challenge_2019_val_v2_expanded.json"),
     "oidv4_val_expanded": ("datasets/oid/images/validation/", "datasets/OID_V4/annotations/openimages_v4_val_bbox.json"),
 }
-
 _TEXT_REGISTER_OID = {
     "oidv4_train_txt": ("/datasets/oid/images", "datasets/OID_V4/annotations/openimages_v4_train_bboxnoAnn.json"),
 }
-
-
 for key, (image_root, json_file) in _CLASSIC_REGISTER_OID.items():
     register_oid_instances_classic(
         key,
