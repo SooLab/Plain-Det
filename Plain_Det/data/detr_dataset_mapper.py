@@ -93,14 +93,14 @@ class DetrDatasetMapper:
 
             img = dataset_dict['file_name']
             temp = img.split('/')
-            if dataset_dict['dataset_name']=='o365':
+            if '365' in dataset_dict['dataset_name']:
                 if os.path.isabs(img):
                     temp = os.path.join('/', *temp[:-4], 'labels', *temp[-3:])
                 else:
                     temp = os.path.join(*temp[:-4], 'labels', *temp[-3:])
 
                 label = Path(os.path.splitext(temp)[0]).with_suffix('.txt')
-            elif dataset_dict['dataset_name'] in ['oid']:
+            elif 'oid' in dataset_dict['dataset_name']:
                 # for exp: /storage/data/zhuyuchen530/oid/images/train_7/7d4365d543d5dfb6.tx
                 # if os.path.isabs(img):
                 #     temp = os.path.join('/', *temp[:-3], 'labels', *temp[-2:])
@@ -109,7 +109,7 @@ class DetrDatasetMapper:
                 temp = os.path.join('/inspurfs/group/yangsb/zhuyuchen/datasets/OID_V4', 'labels', *temp[-2:])
 
                 label = Path(os.path.splitext(temp)[0]).with_suffix('.txt')
-            elif dataset_dict['dataset_name'] in ['lvis_v1']:
+            elif 'lvis_v1' in dataset_dict['dataset_name']:
                 # for exp: /storage/data/zhuyuchen530/oid/images/train_7/7d4365d543d5dfb6.tx
                 if os.path.isabs(img):
                     temp = os.path.join('/', *temp[:-3], 'lvis/labels/train', *temp[-1:])

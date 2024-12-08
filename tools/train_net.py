@@ -44,9 +44,6 @@ from detrex.modeling import ema
 
 from Plain_Det.evaluation import inference_on_dataset
 
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-# sys.path.append('/root/code/General_Det')
-
 
 class Trainer(SimpleTrainer):
     """

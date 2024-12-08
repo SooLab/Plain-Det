@@ -56,7 +56,7 @@ _CLASSIC_REGISTER_OID = {
     "oidv4_val_expanded": ("datasets/oid/images/validation/", "datasets/OID_V4/annotations/openimages_v4_val_bbox.json"),
 }
 _TEXT_REGISTER_OID = {
-    "oidv4_train_txt": ("datasets/oid/images", "datasets/OID_V4/annotations/openimages_v4_train_bboxnoAnn.json"),
+    "oidv4_train_txt": ("/datasets/oid/images", "datasets/OID_V4/annotations/openimages_v4_train_bboxnoAnn.json"),
 }
 for key, (image_root, json_file) in _CLASSIC_REGISTER_OID.items():
     register_oid_instances_classic(
@@ -79,7 +79,7 @@ dataloader = OmegaConf.create()
 dataloader.online_sample = True
 dataloader.train = L(build_custom_train_loader)(
     dataset=L(get_detection_dataset_dicts_with_source)(
-        dataset_names=["coco_2017_train_0","lvis_v1_train_0", "object365_train", "oidv4_train_txt"],
+        dataset_names=["coco_2017_train","lvis_v1_train"],
         filter_empty=False,
         ),
     mapper=L(DetrDatasetMapper)(
@@ -117,15 +117,15 @@ dataloader.train = L(build_custom_train_loader)(
         dataset_dicts="${dataloader.train.dataset}",
         output_dir = "${dataloader.evaluator.output_dir}",
         online_sample = "${dataloader.online_sample}",
-        dataset_ratio=[1,1,1,1],
+        dataset_ratio=[1,1],
         rfs = {
             # Attention! it means if you calculate the rfs online.
             # We find it realy slow(somtimes even collapse), so we use the pre-calculated rfs.
-            "use_rfs":[True, False, False, False],# if calculate online
-            "load_rfs":[False, True, True,True],# if load pre-calculated rfs
-            "load_path":[None,RFS_PATH_l,RFS_PATH_o,CLSA_PATH_d], # pre-calculated rfs paths
+            "use_rfs":[True, False],# if calculate online
+            "load_rfs":[False, True],# if load pre-calculated rfs
+            "load_path":[None,RFS_PATH_l], # pre-calculated rfs paths
         },
-        dataset_ann=["box", "box", "box","box"],
+        dataset_ann=["box", "box"],
         repeat_threshold=0.001,
     ),
     aspect_ratio_grouping=False, 

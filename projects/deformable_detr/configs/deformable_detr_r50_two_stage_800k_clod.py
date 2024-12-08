@@ -15,7 +15,7 @@ train.output_dir = "outputs/CLOD_BS64_CLSA_800k"
 train.max_iter = 800000 #50 epoch 64B  
 
 # run evaluation every 5000 iters
-train.eval_period = 5000000
+train.eval_period = 10000
 
 # log training infomation every 20 iters
 train.log_period = 50
@@ -47,7 +47,7 @@ dataloader.train.num_workers = 2
 dataloader.online_sample = model.online_sample
 # please notice that this is total batch size.
 # each gpu is 64/16 = 4
-dataloader.train.total_batch_size = 64
+dataloader.train.total_batch_size = 16
 
 # dump the testing results into output_dir for visualization
 dataloader.evaluator.output_dir = train.output_dir

@@ -2,9 +2,10 @@
 
 **The official PyTorch implementation of the "Plain-Det: A Plain Multi-Dataset Object Detector".**
 
+[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)[![Paper](https://badgen.net/badge/icon/arXiv?icon=awesome&label&color=red&style=flat-square)](https://arxiv.org/abs/2407.10083)
 ![Plain_det](configs/assets/plain_det.png)
 
-By [Cheng Shi*](https://chengshiest.github.io/), Yuchen Zhu* and [Sibei Yang†](https://faculty.sist.shanghaitech.edu.cn/yangsibei/)
+By [Cheng Shi*](https://chengshiest.github.io/), [Yuchen Zhu*](https://github.com/ZhuYuChenNO1) and [Sibei Yang†](https://faculty.sist.shanghaitech.edu.cn/yangsibei/)
 
 *Equal contribution; †Corresponding Author
 
@@ -30,7 +31,6 @@ By [Cheng Shi*](https://chengshiest.github.io/), Yuchen Zhu* and [Sibei Yang†]
 - You can get the label embedding we use from [here](https://drive.google.com/drive/folders/1G102noS3TjIFkXnShKhaaQRSuPXORwjQ?usp=drive_link)
 
 ## Installation
-
 ### Conda
 
 ```bash
@@ -57,7 +57,47 @@ python setup.py build develop
 
 ## Prepare datasets for Plain-Det
 
-You can follow [detectron2](https://detectron2.readthedocs.io/en/latest/tutorials/builtin_datasets.html) to prepare the dataset.
+You can follow [detectron2](https://detectron2.readthedocs.io/en/latest/tutorials/builtin_datasets.html) or [detic](https://github.com/facebookresearch/Detic/blob/main/datasets/README.md) to download and prepare the dataset.
+
+We place the datasets in the following directory structure:
+
+```
+# Plain-Det datasets structure
+├── datasets/
+│   ├── coco/
+│       ├── annotations/
+│       ├── train2017/
+│       ├── val2017/
+│   ├── lvis
+│       ├── lvis_v1_train.json
+│       ├── lvis_v1_val.json
+│   ├── objects365v2
+│       ├── annotations/
+│           ├── modified_zhiyuan_objv2_train.json 
+│           ├── modified_zhiyuan_objv2_val.json 
+│       ├── images/
+│           ├── train/
+│               ├── patch0/
+│               ├── ...
+│               ├── patch50/
+│           ├── val/
+│               ├── patch0/
+│               ├── ...
+│               ├── patch43/
+│   ├── oid
+│       ├── annotations/
+│           ├── bbox_labels_600_hierarchy-list.json      
+│           ├── openimages_v4_train_bbox.json              
+│           ├── openimages_v4_val_bbox.json              
+│       ├── images/
+│           ├── train_0/
+│           ├── ...
+│           ├── train_f/
+│           ├── validation/
+│              
+```
+
+
 
 ## Usage
 
