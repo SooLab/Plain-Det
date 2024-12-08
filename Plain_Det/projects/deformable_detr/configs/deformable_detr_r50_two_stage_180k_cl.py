@@ -1,24 +1,23 @@
 from detrex.config import get_config
 from .models.deformable_detr_r50_256dim import model
 
-dataloader = get_config("common/data/CLOD_detr.py").dataloader
-lr_multiplier = get_config("common/coco_schedule.py").lr_CLOD_800k
+dataloader = get_config("common/data/lvis_coco_detr.py").dataloader
+lr_multiplier = get_config("common/coco_schedule.py").lr_lvis_test
 optimizer = get_config("common/optim.py").AdamW
 train = get_config("common/train.py").train
 
 # modify training config
 train.init_checkpoint = "weight/resnet50_miil_21k_modified2.pkl"
-train.output_dir = "outputs/CLOD_BS64_CLSA_800k"
-
+train.output_dir = "./outputs/CL"
 
 # max training iterations
-train.max_iter = 800000 #50 epoch 64B  
+train.max_iter = 180000 
 
 # run evaluation every 5000 iters
-train.eval_period = 5000000
+train.eval_period = 50000
 
 # log training infomation every 20 iters
-train.log_period = 50
+train.log_period = 40
 
 # save checkpoint every 5000 iters
 train.checkpointer.period = 50000
@@ -34,8 +33,7 @@ model.device = train.device
 model.with_box_refine = True
 model.as_two_stage = True
 model.output_dir = train.output_dir
-model.online_sample = True
-
+model.online_sample = False
 # modify optimizer config
 optimizer.lr = 1e-4
 optimizer.betas = (0.9, 0.999)
@@ -43,11 +41,12 @@ optimizer.weight_decay = 1e-4
 optimizer.params.lr_factor_func = lambda module_name: 0.1 if "backbone" in module_name else 1
 
 # modify dataloader config
-dataloader.train.num_workers = 2
+dataloader.train.num_workers = 8
 dataloader.online_sample = model.online_sample
 # please notice that this is total batch size.
-# each gpu is 64/16 = 4
-dataloader.train.total_batch_size = 64
+# surpose you're using 4 gpus for training and the batch size for
+# each gpu is 16/4 = 4
+dataloader.train.total_batch_size = 8
 
 # dump the testing results into output_dir for visualization
 dataloader.evaluator.output_dir = train.output_dir

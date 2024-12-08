@@ -11,8 +11,11 @@ By [Cheng Shi*](https://chengshiest.github.io/), [Yuchen Zhu*](https://github.co
 
 ## Highlights
 
-- Plain-Det is accepted by ECCV2024!
-- We will release the training code soon.
+- **Plain-Det is accepted by ECCV2024!**
+- *2024/12/8*: We have released the training code of Plain-Det! 
+
+To-do:
+- We will release more training weights and results soon.
 
 ## Main results
 
@@ -101,6 +104,18 @@ We place the datasets in the following directory structure:
 
 ## Usage
 
+### Training
+**Attention!** In our experiments, we use 8/16 A100 GPUs for training. You should modify the `num_gpus` in the config file to match your own setting. Other numbers may also work, but we haven't tested them.
+When reading the dataset, due to the large size of the annotation file, memory explosion issues often occur. We have resolved this issue by storing the annotations for each image as a txt file and dynamically loading them. You can process the data yourself or contact us(you can find our code about this in dataset register and mapper).
+```bash
+
+# You should change the dataset config in \
+# ./projects/deformable_detr/configs/deformable_detr_r50_two_stage_800k_clod.py \
+
+# Training
+bash scripts/run_CLOD.sh
+```
+### Evaluation 
 ```bash
 
 # You should change the dataset config in \
@@ -110,6 +125,7 @@ We place the datasets in the following directory structure:
 # run evaluation
 bash scripts/eval.sh
 ```
+
 
 ## Citing Plain-Det
 
